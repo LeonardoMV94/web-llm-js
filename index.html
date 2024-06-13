@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>WebLLM - WebWorkers</title>
     <style>
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont,
@@ -130,7 +130,7 @@
     </style>
     <script type="module">
         //@ts-check
-        import { CreateMLCEngine } from "https://esm.run/@mlc-ai/web-llm"
+        import { CreateWebWorkerMLCEngine } from "https://esm.run/@mlc-ai/web-llm"
 
         const $ = el => document.querySelector(el)
         const $form = $('form')
@@ -143,14 +143,17 @@
 
         let messages = []
 
-        const SELECTED_MODEL = 'Llama-3-70B-Instruct-q3f16_1-MLC'
+        // selecciona un model_id aqui https://github.com/mlc-ai/web-llm/blob/main/src/config.ts
+        
+        const SELECTED_MODEL = 'Llama-3-8B-Instruct-q4f32_1-MLC-1k'
 
-        const engine = await CreateMLCEngine(
+        const engine = await CreateWebWorkerMLCEngine(
+            new Worker('./worker.js', { type: 'module' }),
             SELECTED_MODEL,
             {
                 initProgressCallback: (info) => {
                     console.log(info)
-                    $info.textContent = `${info.text}%`
+                    $info.textContent = `${info.text.split(',')[0]}`
                     if (info.progress === 1) {
                         $button.removeAttribute('disabled')
                     }
